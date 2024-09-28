@@ -1,12 +1,22 @@
 import pygame
 import sys
+
+from definitions import game_states
 from settings import settings
 from global_objects import globals
 from game_object import GameObject
 from general_objects.player import Player
+from general_objects.main_menu import MainMenu
+from camera import Camera
+from collision import CollisionGrid
 
 # Initialize Pygame
 pygame.init()
+
+# Init global objects
+globals.main_menu = MainMenu()
+globals.camera = Camera()
+globals.collision_grid = CollisionGrid()
 
 # Game settings
 BG_COLOR = (0, 0, 0)  # Background color (black)
@@ -27,6 +37,7 @@ def main():
     clock = pygame.time.Clock()  # For controlling the frame rate
     running = True
 
+    # Create the player
     player = Player()
     player.register()
 
@@ -41,23 +52,38 @@ def main():
     while running:
         clock.tick(FPS)  # Ensure the game runs at the desired frame rate
 
-        for event in pygame.event.get():
+        events = pygame.event.get()
+
+        for event in events:
             if event.type == pygame.QUIT:  # Close the game window
                 running = False
 
-        # Get the current state of the keyboard
-        keys_pressed = pygame.key.get_pressed()
-        player.handle_keys(keys_pressed)
+        if globals.game_state == game_states.RUNNING:
+            # Get the current state of the keyboard
+            keys_pressed = pygame.key.get_pressed()
 
-        # Update the camera to follow the character
-        globals.camera.update(player)
+            # Exit the game on escape
+            # TODO: Return to main menu?
+            if keys_pressed[pygame.K_ESCAPE]:
+                running = False
 
-        # Fill the screen with the background color
-        screen.fill(BG_COLOR)
+            # Handle player input
+            player.handle_keys(keys_pressed)
 
-        # Draw all objects
-        for _, obj in globals.game_objects.items():
-            obj.draw(screen)
+            # Update the camera to follow the character
+            globals.camera.update(player)
+
+            # Fill the screen with the background color
+            screen.fill(BG_COLOR)
+
+            # Draw all objects
+            for _, obj in globals.game_objects.items():
+                obj.draw(screen)
+
+        elif globals.game_state == game_states.MAIN_MENU:
+            for event in events:
+                globals.main_menu.get_menu().handle_event(event)
+            globals.main_menu.get_menu().draw(screen)
 
         # FPS Monitoring
         current_fps = clock.get_fps()

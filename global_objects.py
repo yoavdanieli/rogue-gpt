@@ -1,9 +1,11 @@
-from camera import Camera
-from collision import CollisionGrid
+from definitions import game_states
 
 class GlobalObjects:
-    camera = Camera()
-    collision_grid = CollisionGrid()
+    game_state = game_states.MAIN_MENU
+
+    main_menu = None
+    camera = None
+    collision_grid = None
 
     game_objects = {}
 
