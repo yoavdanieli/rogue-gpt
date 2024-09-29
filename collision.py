@@ -8,10 +8,9 @@ class CollisionGrid:
         if not obj.collidable:
             return  # Exempted objects are not registered for collision
         for square in obj.squares:
-            offset_x, offset_y, width, height, _ = square
-            for i in range(width):
-                for j in range(height):
-                    grid_pos = (obj.x + offset_x + i, obj.y + offset_y + j)
+            for i in range(square.width):
+                for j in range(square.height):
+                    grid_pos = (obj.x + square.offset_x + i, obj.y + square.offset_y + j)
                     if grid_pos in self.grid:
                         self.grid[grid_pos].append(obj)
                     else:
@@ -23,10 +22,9 @@ class CollisionGrid:
         if not obj.collidable:
             return  # Exempted objects are not registered for collision
         for square in obj.squares:
-            offset_x, offset_y, width, height, _ = square
-            for i in range(width):
-                for j in range(height):
-                    grid_pos = (obj.x + offset_x + i, obj.y + offset_y + j)
+            for i in range(square.width):
+                for j in range(square.height):
+                    grid_pos = (obj.x + square.offset_x + i, obj.y + square.offset_y + j)
                     if grid_pos in self.grid and obj in self.grid[grid_pos]:
                         self.grid[grid_pos].remove(obj)
                         if not self.grid[grid_pos]:  # Clean up empty grid cells

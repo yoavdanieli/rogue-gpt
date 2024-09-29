@@ -7,3 +7,4 @@ class object_types:
     GENERIC = 'GENERIC'
     PLAYER = 'PLAYER'
     PARTICLE = 'PARTICLE'
+    BACKGROUND = 'BACKGROUND'

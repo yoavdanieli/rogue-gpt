@@ -30,6 +30,9 @@ class Level:
 
         self.on_frame(events, keys_pressed)
 
+        for _, obj in list(globals.game_objects.items()):
+            obj.on_frame(events, keys_pressed)
+
         # Fill the screen with the background color
         self.screen.fill(self.BLACK)
 

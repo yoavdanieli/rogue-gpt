@@ -1,10 +1,12 @@
 import pygame
 import sys
+import json
 
 from definitions import game_states
 from settings import settings
 from global_objects import globals
 from dummy_objects.dummy_level import DummyLevel
+from dummy_objects.particle_level import ParticleLevel
 from general_objects.main_menu import MainMenu
 from camera import Camera
 from collision import CollisionGrid
@@ -26,7 +28,7 @@ font = pygame.font.SysFont('Arial', 24)
 warning_text = font.render('Warning: FPS below 60!', True, (255, 0, 0))
 
 # Init global objects
-globals.current_level = DummyLevel(screen)
+globals.current_level = ParticleLevel(screen)
 globals.main_menu = MainMenu()
 globals.camera = Camera()
 globals.collision_grid = CollisionGrid()

@@ -1,20 +1,20 @@
 import pygame
 from uuid import uuid4
+from typing import List
 from definitions import object_types
 from settings import settings
 from global_objects import globals
+from square import Square
 
-def draw_object(surface, x, y, squares):
-    """Draw an object defined by a list of (offset_x, offset_y, width, height, color) tuples."""
+def draw_object(surface, x, y, squares: List[Square]):
     for square in squares:
-        offset_x, offset_y, width, height, color = square
-        pygame.draw.rect(surface, color, (
-            (x + offset_x) * settings.pixel_size,  # Convert to raw screen pixels
-            (y + offset_y) * settings.pixel_size,
-            width * settings.pixel_size, height * settings.pixel_size))  # Scale width and height
+        pygame.draw.rect(surface, square.color, (
+            (x + square.offset_x) * settings.pixel_size,  # Convert to raw screen pixels
+            (y + square.offset_y) * settings.pixel_size,
+            square.width * settings.pixel_size, square.height * settings.pixel_size))  # Scale width and height
 
 class GameObject:
-    def __init__(self, x, y, squares, type=None, collidable=True):
+    def __init__(self, x, y, squares: List[Square], type=None, collidable=True):
         """
         Initialize a game object.
         
@@ -31,14 +31,29 @@ class GameObject:
         self.type = type if type else object_types.GENERIC
         self.collidable = collidable  # Collision flag
         self.id = self.type + '-' + str(uuid4())
+        self.registered = False
 
     def register(self):
         globals.collision_grid.register(self)
         globals.game_objects[self.id] = self
+        self.registered = True
 
     def unregister(self):
+        print(f"unregistering {self.id}")
         globals.collision_grid.unregister(self)
-        globals.game_objects.pop(self.id)
+        del globals.game_objects[self.id]
+        self.registered = False
+
+    def update_position(self, new_x, new_y):
+        if not self.registered:
+            return
+
+        self.x = new_x
+        self.y = new_y
+
+        # Register the object in the new grid position
+        globals.collision_grid.unregister(self)
+        globals.collision_grid.register(self)
 
     def draw(self, surface):
         """Draw the object using the camera offset."""
@@ -66,33 +81,43 @@ class GameObject:
             return  # Cancel movement if a collision occurs
 
         # Apply the move if no collision
-        self.x = new_x
-        self.y = new_y
-
-        # Register the object in the new grid position
-        globals.collision_grid.register(self)
+        self.update_position(new_x, new_y)
 
     def check_collision(self, new_x, new_y):
         """Check if moving to the new position would cause a collision."""
         for square in self.squares:
-            offset_x, offset_y, width, height, _ = square
             # Check for collision by looking at the grid positions that this square would occupy
-            for i in range(width):
-                for j in range(height):
-                    new_grid_pos = (new_x + offset_x + i, new_y + offset_y + j)
+            for i in range(square.width):
+                for j in range(square.height):
+                    new_grid_pos = (new_x + square.offset_x + i, new_y + square.offset_y + j)
                     if new_grid_pos in globals.collision_grid.grid:
                         for other in globals.collision_grid.grid[new_grid_pos]:
                             if other != self:
+                                print(f"collision {self.id} {other.id}")
+                                print(f"content: {globals.collision_grid.grid[new_grid_pos]}")
                                 # Trigger the collision callback
-                                self.on_collision(other)
-                                other.on_collision(self)
-                                return True
+                                should_not_move = self.on_collision_active(other)
+                                other.on_collision_passive(self)
+                                return should_not_move
         return False
 
-    def on_collision(self, other):
+    def on_collision_active(self, other):
         """Callback when this object collides with another."""
-        print(f"Collision detected between {self} and {other}")
+        # print(f"Collision detected between {self} and {other}")
+        pass
+
+    def on_collision_passive(self, other):
+        """Callback when another object collides with this."""
+        # print(f"Collision detected between {self} and {other}")
+        pass
+
+    def on_frame(self, events, pressed_keys):
+        """
+        Callback for objects to implement
+        """
+
+        pass
 
     def __repr__(self):
         """String representation for debugging."""
-        return f"GameObject({self.x}, {self.y}, Collidable={self.collidable})"
+        return f"GameObject({self.x}, {self.y}, id={self.id})"
