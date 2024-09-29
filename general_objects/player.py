@@ -1,4 +1,5 @@
 import pygame
+from definitions import object_types
 from settings import settings
 from game_object import GameObject
 
@@ -9,7 +10,7 @@ class Player(GameObject):
             (0, 0, 2, 2, (255, 0, 0)),  # Red square, 2x2
         ]
 
-        super().__init__(32, 24, character_model_squares)
+        super().__init__(32, 24, character_model_squares, type=object_types.PLAYER)
 
     def handle_keys(self, keys_pressed):
         # Handle movement in game-world pixel units

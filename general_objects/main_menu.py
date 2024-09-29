@@ -15,9 +15,9 @@ class MainMenu:
     def init_main_menu(self):
         self.main_menu = Menu(exit_callback=self.menu_exit_callback)
 
-        play_button = Button("Play", 140, 50, lambda: self.switch_global_state(game_states.RUNNING))
+        play_button = Button("Play", 140, 50, lambda: self.on_play_click())
         settings_button = Button("Settings", 140, 50, lambda: self.switch_submenu(self.SETTINGS))
-        
+
         self.main_menu.add_item(play_button)
         self.main_menu.add_item(settings_button)
 
@@ -54,7 +54,11 @@ class MainMenu:
             return self.main_menu
         elif self.state == self.SETTINGS:
             return self.settings_menu
-    
+
+    def on_play_click(self):
+        self.switch_global_state(game_states.RUNNING)
+        globals.current_level.start()
+
     def switch_global_state(self, state):
         print(f"Switching to game state {state}")
         globals.game_state = state

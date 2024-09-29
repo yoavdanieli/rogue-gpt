@@ -1,5 +1,6 @@
 import pygame
 from uuid import uuid4
+from definitions import object_types
 from settings import settings
 from global_objects import globals
 
@@ -13,7 +14,7 @@ def draw_object(surface, x, y, squares):
             width * settings.pixel_size, height * settings.pixel_size))  # Scale width and height
 
 class GameObject:
-    def __init__(self, x, y, squares, collidable=True):
+    def __init__(self, x, y, squares, type=None, collidable=True):
         """
         Initialize a game object.
         
@@ -23,11 +24,13 @@ class GameObject:
             squares (list): List of squares defining the object.
             collidable (bool): Whether the object participates in collision detection.
         """
-        self.id = uuid4()
+
         self.x = x  # Position in game-world pixel units
         self.y = y  # Position in game-world pixel units
         self.squares = squares  # Structure of the object as squares (with sizes)
+        self.type = type if type else object_types.GENERIC
         self.collidable = collidable  # Collision flag
+        self.id = self.type + '-' + str(uuid4())
 
     def register(self):
         globals.collision_grid.register(self)

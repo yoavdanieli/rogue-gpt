@@ -4,8 +4,7 @@ import sys
 from definitions import game_states
 from settings import settings
 from global_objects import globals
-from game_object import GameObject
-from general_objects.player import Player
+from dummy_objects.dummy_level import DummyLevel
 from general_objects.main_menu import MainMenu
 from camera import Camera
 from collision import CollisionGrid
@@ -13,13 +12,7 @@ from collision import CollisionGrid
 # Initialize Pygame
 pygame.init()
 
-# Init global objects
-globals.main_menu = MainMenu()
-globals.camera = Camera()
-globals.collision_grid = CollisionGrid()
-
 # Game settings
-BG_COLOR = (0, 0, 0)  # Background color (black)
 FPS = 60  # Frames per second
 FPS_THRESHOLD = 60  # Threshold to trigger FPS warning
 
@@ -32,22 +25,16 @@ pygame.font.init()
 font = pygame.font.SysFont('Arial', 24)
 warning_text = font.render('Warning: FPS below 60!', True, (255, 0, 0))
 
+# Init global objects
+globals.current_level = DummyLevel(screen)
+globals.main_menu = MainMenu()
+globals.camera = Camera()
+globals.collision_grid = CollisionGrid()
+
 
 def main():
     clock = pygame.time.Clock()  # For controlling the frame rate
     running = True
-
-    # Create the player
-    player = Player()
-    player.register()
-
-    # Define a wall object that will cause a collision with a larger size
-    wall_squares = [(0, 0, 3, 1, (0, 255, 0))]  # Green rectangle, 3x1
-    GameObject(40, 24, wall_squares).register()
-
-    # Define an exempted object (e.g., decorative element) that does not collide
-    decorative_squares = [(0, 0, 4, 4, (0, 0, 255))]  # Blue square, 4x4
-    GameObject(50, 30, decorative_squares, collidable=False).register()
 
     while running:
         clock.tick(FPS)  # Ensure the game runs at the desired frame rate
@@ -67,18 +54,7 @@ def main():
             if keys_pressed[pygame.K_ESCAPE]:
                 running = False
 
-            # Handle player input
-            player.handle_keys(keys_pressed)
-
-            # Update the camera to follow the character
-            globals.camera.update(player)
-
-            # Fill the screen with the background color
-            screen.fill(BG_COLOR)
-
-            # Draw all objects
-            for _, obj in globals.game_objects.items():
-                obj.draw(screen)
+            globals.current_level.handle_frame(events, keys_pressed)
 
         elif globals.game_state == game_states.MAIN_MENU:
             for event in events:
