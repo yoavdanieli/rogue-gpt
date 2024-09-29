@@ -4,6 +4,7 @@ from general_objects.level import Level
 from dummy_objects.particle_player import ParticlePlayer
 from dummy_objects.particle import Particle
 from dummy_objects.background import Background
+from dummy_objects.map_outline_barrier import MapOutlineBarrier
 from game_object import GameObject
 
 class ParticleLevel(Level):
@@ -12,7 +13,7 @@ class ParticleLevel(Level):
 
         self.player = ParticlePlayer()
 
-        self.objects = [Background()]
+        self.objects = [Background(), MapOutlineBarrier()]
 
         self.particle_delay = 1
         self.counter = 1

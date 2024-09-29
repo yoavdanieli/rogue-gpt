@@ -8,6 +8,9 @@ from square import Square
 
 def draw_object(surface, x, y, squares: List[Square]):
     for square in squares:
+        if square.invisible:
+            continue
+
         pygame.draw.rect(surface, square.color, (
             (x + square.offset_x) * settings.pixel_size,  # Convert to raw screen pixels
             (y + square.offset_y) * settings.pixel_size,
@@ -39,7 +42,6 @@ class GameObject:
         self.registered = True
 
     def unregister(self):
-        print(f"unregistering {self.id}")
         globals.collision_grid.unregister(self)
         del globals.game_objects[self.id]
         self.registered = False
@@ -93,8 +95,6 @@ class GameObject:
                     if new_grid_pos in globals.collision_grid.grid:
                         for other in globals.collision_grid.grid[new_grid_pos]:
                             if other != self:
-                                print(f"collision {self.id} {other.id}")
-                                print(f"content: {globals.collision_grid.grid[new_grid_pos]}")
                                 # Trigger the collision callback
                                 should_not_move = self.on_collision_active(other)
                                 other.on_collision_passive(self)

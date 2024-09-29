@@ -8,3 +8,4 @@ class object_types:
     PLAYER = 'PLAYER'
     PARTICLE = 'PARTICLE'
     BACKGROUND = 'BACKGROUND'
+    BARRIER = 'BARRIER'
