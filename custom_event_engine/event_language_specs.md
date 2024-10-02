@@ -5,7 +5,9 @@
     "perdiod": int # In case this is periodic, what's the interval between triggers. In frames, 60 FPS
   },
 
-  # A new object will be created for the event that will start doing what we desire
+  # A new object will be created for the event that will start doing what we desire.
+  # The new object is created at the position of the object that created it, the first object
+  # is created by the player.
   "event_object": {
     "type": "object_types.PARTICLE",   # Currently only particles are supported
 
@@ -27,8 +29,7 @@
     #
     # You can define variables and perform very basic arithmetic (+-) and comparisons (==, >) to control
     # your flow.
-    # Variable names cannot contain ".", as dots represent internal values exposed to the event, like
-    # object types
+    # Only use variables you have explicitly declared
     "actions": {
       "entry": { # Entry must exist and will be called at the start
         "type": "sleep",  # This command can be used to skip frames
